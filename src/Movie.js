@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 // destucturing
 export function Movie({ movieName, poster, rating, summary ,id,deleteButton,editButton}) {
 
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
 
   const history = useHistory();
 
@@ -66,11 +66,10 @@ export function Movie({ movieName, poster, rating, summary ,id,deleteButton,edit
       {/* conditional rendering  */}
       {/* {show ? <p className="summary" style={summaryStyles}>{summary}</p> : "" } */}
 
-
+      <div className="newcontent"> 
       <Counter /> 
-
       {editButton} {deleteButton} 
-      
+      </div>
     </Card>
 
   );

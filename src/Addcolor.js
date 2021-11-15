@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 
 // -------------------------------------------------------------
 export function Addcolor() {
-  const [color, setcolor] = useState("white");
+  const [color, setcolor] = useState("orange");
   const style = { backgroundColor: color };
   const [colors, setcolors] = useState(["violet", "pink", "blue"]);
   // const colors =["violet","pink","blue"];

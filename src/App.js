@@ -7,16 +7,32 @@ import { useState } from 'react';
 // import Counter from './counter';
 
 //for button
-import Button from '@mui/material/Button';
 
-import TextField from '@mui/material/TextField';
 import { Addcolor } from './Addcolor';
 // import { Add } from '@mui/icons-material';
-import { Switch, Route, Link,Redirect, useParams} from "react-router-dom";
+import { Switch, Route,Redirect} from "react-router-dom";
 import { MoviesLists } from './MoviesLists';
 import { NotFound } from './NotFound';
+import { MovieDetails } from './MovieDetails';
+import { Welcome } from './Welcome';
+import { AddMovies } from './AddMovies';
+import { EditMovies } from './EditMovie';
 // import { Router } from '@mui/icons-material';
+import AppBar from '@mui/material/AppBar';
+// import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+// import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+// import IconButton from '@mui/material/IconButton';
+// import MenuIcon from '@mui/icons-material/Menu';
+import { useHistory } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import Paper from '@mui/material/Paper';
+import useWindowSize from 'react-use/lib/useWindowSize'
+import Confetti from 'react-confetti'
 
 
 export default function App() {
@@ -83,15 +99,74 @@ export default function App() {
   ]; 
 
   const [movies,setmovie] = useState(movieList);
+  const history = useHistory();
+  const [mode,setMode] = useState("dark")
+
+  const theme = createTheme({
+    palette: {
+      mode: mode,
+    },
+  });
 
   return (
+    <ThemeProvider theme={theme}>
+      <Paper elevation={0} style={{borderRadius:"0px", minHeight:"100vh"}}  >
     <div className="App">
-       <nav>
+       <AppBar position="static" style={{marginBottom:"24px"}}>
+        <Toolbar>
+        <Button 
+        variant="text" 
+        color="inherit"
+        onClick={()=>history.push("/")}
+        >Home
+        </Button>
+
+        <Button 
+        variant="text" 
+        color="inherit"
+        onClick={()=>history.push("/movies")}
+        >Movies
+        </Button>
+
+        <Button 
+        variant="text" 
+        color="inherit"
+        onClick={()=>history.push("/add-movies")}
+        >Add Movies
+        </Button>
+
+        <Button 
+        variant="text" 
+        color="inherit"
+        onClick={()=>history.push("/color-game")}
+        >Color game
+        </Button>
+
+        <Button 
+        variant="text" 
+        color="inherit"
+        onClick={()=>history.push("/tictacteo")}
+        >Tic-Tac-Toe Game
+        </Button>
+        
+        <Button 
+        startIcon={mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        style={{marginLeft:"auto"}}
+        variant="text" 
+        color="inherit"
+        onClick={()=>setMode(mode==="light"?"dark":"light")}
+        >{mode==="light"?"dark":"light"}mode
+        </Button>
+         
+        </Toolbar>
+      </AppBar>
+       {/* <nav>
+      
          <Link to="/">Home</Link>
          <Link to="/movies">Movies</Link>
          <Link to="/add-movies">Add Movies</Link>
          <Link to="/color-game">Color game</Link>
-       </nav>
+       </nav> */}
 
       <Switch>
 
@@ -102,6 +177,10 @@ export default function App() {
          <Route path="/films">
             <Redirect to="/movies"/>
          </Route>
+
+         <Route path="/movies/edit/:id">
+          <EditMovies movies={movies} setmovie={setmovie}/>
+        </Route>
 
          <Route path="/movies/:id">
         <MovieDetails movies={movies}/>
@@ -118,6 +197,10 @@ export default function App() {
       <Route path="/color-game">
       <Addcolor/>
       </Route>
+
+      <Route path="/tictacteo">
+      <TicTacToe/>
+      </Route>
       
       <Route path="**">
          <NotFound />
@@ -125,124 +208,94 @@ export default function App() {
     
       </Switch>
     </div>
+    </Paper>
+    </ThemeProvider>
   );
 }
 
-function MovieDetails({movies}){
-  const {id} = useParams();
-  const movie = movies[id];
-  const styles = {
-    color: movie.rating < 4.6 ? "crimson" : "green",
-    fontWeight: "bold",
-  };
 
-  // console.log(movie);
-  return (
-    <div className="newContainer">
-      <iframe 
-      width="100%" 
-      height="500" 
-      src={movie.trailer} 
-      title="YouTube video player" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen>
-      </iframe>
+function TicTacToe () {
+  const { width, height } = useWindowSize()
+  const [board,setBoard] = useState([
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ]);
 
-      <div className="details">
-        <h2 className="name">{movie.name}</h2>
-        <h3 className="rating" style={styles}>Rating: {movie.rating}</h3>
-        <p className="summary" >{movie.summary}</p>
-      </div>
-    </div>
-  )
+  // useState([
+  //   0,
+  //   1,
+  //   2,
+  //   3,
+  //   4,
+  //   5,
+  //   6,
+  //   7,
+  //   8
+  // ]);
+
+  const [isXTurn,setIsXTurn] = useState(true);
+
+  // const handleClick = (index)=>{
+  // //  console.log(index);
+  // //  console.log(isXTurn ? "X" : "O");
+  // if(board[index]==null){
+  //   const boardCopy = [...board];
+  //   boardCopy[index] = isXTurn ? "X" : "O";
+  //   setBoard(boardCopy);
+  //   setIsXTurn(!isXTurn);
+  // }
+  // }
+
+  const decideWinner = (board)=>{
+    const lines = [
+      [0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]
+    ];
+    for(let i=0; i<lines.length; i++){
+      const [a,b,c] = lines[i];
+      if(board[a]!== null && board[a]===board[b]&&board[b]===board[c]){
+        console.log("winner is",board[a]);
+        return board[a];
+      }
+    }
+    return null;
+  }
+  const winner = decideWinner(board);
+
+  const handleClick = (index)=>{
+    //  console.log(index);
+    //  console.log(isXTurn ? "X" : "O");
+    if(winner == null && board[index]==null){
+      const boardCopy = [...board];
+      boardCopy[index] = isXTurn ? "X" : "O";
+      setBoard(boardCopy);
+      setIsXTurn(!isXTurn);
+    }
+    }
+
+ return(
+   <div className="full-game">
+     {winner ? <Confetti width={width}height={height}/> : ""}
+     <div className="board">
+     {board.map((val,index)=>
+       <GameBox val={val} onPlayerClick = {()=>handleClick(index)} />
+     )}
+     </div>
+   {winner ? <h1>Winner is: {winner}</h1> : ""}
+  </div>
+ )
 }
 
-
-function Welcome(){
-  return <h2>Welcome To App</h2>
+function GameBox({onPlayerClick,val}){
+  // const [val,setVal] = useState(null);
+  const styles = {color:val==="X"? "green":"red"}
+  return <div style={styles} onClick={onPlayerClick} className="game-box">
+    {val}
+  </div>
 }
- 
-// when two component needed the same data (movies)->put the data in same parent component (that is app)-->HOC(higher order components)
-
-function AddMovies({movies,setmovie}){
-
-  const [name,setName] = useState("");
-  const [poster,setPoster] = useState("");
-  const [rating,setRating] = useState("");
-  const [summary,setSummary] = useState("");
-  const [trailer,setTrailer] = useState("");
-
-  const addMovie = ()=>{
-    // console.log("...adding",name,poster,rating,summary);
-    const newMovie = {
-      name:name,
-      poster:poster,
-      rating:rating,
-      summary:summary,
-      trailer:trailer
-    };
-    // console.log(newMovie);
-    // copy the movie list then add it to the newMovie
-    setmovie([...movies,newMovie]);
-  };
-
-  return(
-       <div className="add-movie-form">
-         {/* <input 
-          value={name}
-          onChange = {(event)=>setName(event.target.value)}
-         placeholder="Name" /> */}
-
-       <TextField 
-       value={name}
-       onChange = {(event)=>setName(event.target.value)}
-       id="standard-basic" label="Name" variant="standard" />
-
-         {/* <input 
-          value={poster}
-          onChange = {(event)=>setPoster(event.target.value)}
-         placeholder="poster URL" /> */}
-         
-         <TextField 
-        value={poster}
-        onChange = {(event)=>setPoster(event.target.value)}
-         id="standard-basic" label="Poster URL" variant="standard" />
-
-         {/* <input 
-          value={rating}
-          onChange = {(event)=>setRating(event.target.value)}
-         placeholder="Rating" /> */}
-
-       <TextField 
-        value={rating}
-        onChange = {(event)=>setRating(event.target.value)}
-       id="standard-basic" label="Rating" variant="standard" />
-
-         {/* <input 
-          value={summary}
-          onChange = {(event)=>setSummary(event.target.value)}
-         placeholder="Summary" /> */}
-
-       <TextField 
-        value={summary}
-        onChange = {(event)=>setSummary(event.target.value)}
-       id="standard-basic" label="Summary" variant="standard" />
-
-      <TextField 
-        value={trailer}
-        onChange = {(event)=>setTrailer(event.target.value)}
-       id="standard-basic" label="Trailer" variant="standard" />
-
-         {/* <button onClick={addMovie}>Add Movie</button> */}
-
-         <Button onClick={addMovie} variant="outlined">Add Movie</Button>
-         
-       </div>
-  )
-}
-
-
-
-
-

@@ -4,25 +4,46 @@ import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useHistory } from "react-router-dom";
+import { useState,useEffect } from 'react';
 
-export function MoviesLists({ movies1 ,setmovie }) {
+export function MoviesLists() {
+
+  const [movies,setmovie] = useState([]);
+
+  const getMovies =()=>{
+    fetch("https://6166c4d913aa1d00170a66f7.mockapi.io/movies")
+    .then((data)=>data.json())
+    .then((mvs)=>setmovie(mvs));
+  }
+
+  useEffect(getMovies,[])
+
+  const deleteMovie = (id)=>{
+    fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${id}`, 
+    {method:"DELETE"})
+    .then(()=>getMovies())
+  }
+
   const history = useHistory();
   return (
     <div className="Allmovies">
-      {movies1.map(({ name, rating, summary, poster },index) => 
+      {movies.map(({ name, rating, summary, poster,id },index) => 
 
-      <Movie movieName={name} 
+      <Movie 
+      key={id}
+      movieName={name} 
       poster={poster} 
       rating={rating} 
       summary={summary} 
-      id={index} 
+      id={id} 
       deleteButton={ <IconButton onClick={()=>{ 
-        console.log("deleting...",index)
-        const deleteIdx = index;
-        const remainingMovies = movies1.filter((mv,idx)=>{
-          return idx !== deleteIdx;
-        })
-        setmovie(remainingMovies);
+        deleteMovie(id)
+        // console.log("deleting...",index)
+        // const deleteIdx = index;
+        // const remainingMovies = movies1.filter((mv,idx)=>{
+        //   return idx !== deleteIdx;
+        // })
+        // setmovie(remainingMovies);
       }}
         className="movie-show-button"
         color="error"
@@ -32,7 +53,7 @@ export function MoviesLists({ movies1 ,setmovie }) {
 
       editButton={<IconButton 
         style={{marginLeft:"auto"}}
-        onClick={()=>history.push("/movies/edit/"+index)}
+        onClick={()=>history.push("/movies/edit/"+id)}
          className="movie-show-button"
          color="primary"
          aria-label="more-info">

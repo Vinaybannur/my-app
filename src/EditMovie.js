@@ -1,22 +1,34 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 
 // when two component needed the same data (movies)->put the data in same parent component (that is app)-->HOC(higher order components)
-export function EditMovies({ movies, setmovie }) {
-    const history = useHistory();
+export function EditMovies() {
+    // const history = useHistory();
     const { id } = useParams();
-    const movie = movies[id];
+    // const movie = movies[id];
 
+    const [movie,setMovie] = useState(null);
+    useEffect(()=>{
+      fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${id}`)
+      .then((data)=>data.json())
+      .then((mvs)=>setMovie(mvs));
+    },[id]);
 
-  const [name, setName] = useState(movie.name);
+    return movie ? <UpdateMovie movie={movie} /> :"";
+  }
+   
+  function UpdateMovie({movie}){
+    const [name, setName] = useState(movie.name);
   const [poster, setPoster] = useState(movie.poster);
   const [rating, setRating] = useState(movie.rating);
   const [summary, setSummary] = useState(movie.summary);
   const [trailer, setTrailer] = useState(movie.trailer);
 
+  const history = useHistory();
+   
   const editMovie = () => {
     // console.log("...adding",name,poster,rating,summary);
     const updatedMovie = {
@@ -26,13 +38,15 @@ export function EditMovies({ movies, setmovie }) {
       summary: summary,
       trailer: trailer
     };
-    // console.log(newMovie);
-    // copy the movie list then add it to the newMovie
-    // setmovie([...movies, updatedMovie]);
-    const copyMovieList = [...movies];
-    copyMovieList[id]= updatedMovie;
-    setmovie(copyMovieList);
-    history.push("/movies");
+
+    fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${movie.id}`,
+    {method:"PUT",
+     body:JSON.stringify(updatedMovie),
+     headers:{
+       'Content-Type':'application/json'
+     },
+    }).then(()=> history.push("/movies"));
+    
   };
 
   return (
@@ -88,4 +102,20 @@ export function EditMovies({ movies, setmovie }) {
 
     </div>
   );
-}
+  }
+
+
+  
+
+  
+    // console.log(newMovie);
+    // copy the movie list then add it to the newMovie
+    // setmovie([...movies, updatedMovie]);
+  //   const copyMovieList = [...movies];
+  //   copyMovieList[id]= updatedMovie;
+  //   setmovie(copyMovieList);
+  //   history.push("/movies");
+  // };
+
+ 
+// }

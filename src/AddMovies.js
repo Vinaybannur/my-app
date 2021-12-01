@@ -6,7 +6,7 @@ import {  useFormik } from "formik";
 import * as yup from 'yup';
 
 
-const formValidationSchema = yup.object({
+export const formValidationSchema = yup.object({
   name:yup.string().required("Why not fill this name?🤔"),
   poster:yup.string().required("Why not fill this poster?🤔").min(4,"Need a bigger poster🤨"),
   rating:yup.number().required("Why not fill this rating?🤔").min(0,"Need a bigger rating🤨").max(5,"Too much rating😅"),

@@ -6,12 +6,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useHistory } from "react-router-dom";
 import { useState,useEffect } from 'react';
 
+// const API_URL = "https://6166c4d913aa1d00170a66f7.mockapi.io"
+const API_URL = "https://b28wd-movies.herokuapp.com"
+
 export function MoviesLists() {
 
   const [movies,setmovie] = useState([]);
 
   const getMovies =()=>{
-    fetch("https://6166c4d913aa1d00170a66f7.mockapi.io/movies")
+    fetch(`${API_URL}/movies`)
     .then((data)=>data.json())
     .then((mvs)=>setmovie(mvs));
   }
@@ -19,7 +22,7 @@ export function MoviesLists() {
   useEffect(getMovies,[])
 
   const deleteMovie = (id)=>{
-    fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${id}`, 
+    fetch(`${API_URL}/movies/${id}`, 
     {method:"DELETE"})
     .then(()=>getMovies())
   }

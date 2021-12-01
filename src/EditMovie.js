@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import {  useFormik } from "formik";
+import { formValidationSchema } from './AddMovies';
 
 // when two component needed the same data (movies)->put the data in same parent component (that is app)-->HOC(higher order components)
 export function EditMovies() {
@@ -21,23 +23,41 @@ export function EditMovies() {
   }
    
   function UpdateMovie({movie}){
-    const [name, setName] = useState(movie.name);
-  const [poster, setPoster] = useState(movie.poster);
-  const [rating, setRating] = useState(movie.rating);
-  const [summary, setSummary] = useState(movie.summary);
-  const [trailer, setTrailer] = useState(movie.trailer);
+    
+  //   const [name, setName] = useState(movie.name);
+  // const [poster, setPoster] = useState(movie.poster);
+  // const [rating, setRating] = useState(movie.rating);
+  // const [summary, setSummary] = useState(movie.summary);
+  // const [trailer, setTrailer] = useState(movie.trailer);
+  const {handleSubmit,values,handleChange,handleBlur,errors,touched} = useFormik({
+    initialValues: {
+      name:movie.name,
+      poster:movie.poster,
+      rating:movie.rating,
+      summary:movie.summary,
+      trailer:movie.trailer
+    },
+    // validate:validateForm,
+    validationSchema:formValidationSchema,
+    // only when no errors ,onsubmit
+    onSubmit:(newMovie)=>{
+        console.log("onSubmit",newMovie);
+        editMovie(newMovie)
+    }
+})
+
 
   const history = useHistory();
    
-  const editMovie = () => {
+  const editMovie = (updatedMovie) => {
     // console.log("...adding",name,poster,rating,summary);
-    const updatedMovie = {
-      name: name,
-      poster: poster,
-      rating: rating,
-      summary: summary,
-      trailer: trailer
-    };
+    // const updatedMovie = {
+    //   name: name,
+    //   poster: poster,
+    //   rating: rating,
+    //   summary: summary,
+    //   trailer: trailer
+    // };
 
     fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${movie.id}`,
     {method:"PUT",
@@ -50,57 +70,147 @@ export function EditMovies() {
   };
 
   return (
-    <div className="add-movie-form">
-      {/* <input
-             value={name}
-             onChange = {(event)=>setName(event.target.value)}
-            placeholder="Name" /> */}
+    <form onSubmit={handleSubmit} className="add-movie-form">
+    {/* <input
+           value={name}
+           onChange = {(event)=>setName(event.target.value)}
+          placeholder="Name" /> */}
 
-      <TextField
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        id="standard-basic" label="Name" variant="standard" />
+    <TextField
+      id="name"
+      name="name"
+      value={values.name} 
+     onChange={handleChange}
+     onBlur={handleBlur}
+      label="Name" 
+      variant="standard" 
+      helperText={errors.name && touched.name && errors.name}
+      error={errors.name && touched.name}
+      />
+     {/* {errors.name && touched.name && errors.name} */}
+    {/* <input
+           value={poster}
+           onChange = {(event)=>setPoster(event.target.value)}
+          placeholder="poster URL" /> */}
 
-      {/* <input
-             value={poster}
-             onChange = {(event)=>setPoster(event.target.value)}
-            placeholder="poster URL" /> */}
+    <TextField
+      id="poster"
+      name="poster"
+      value={values.poster} 
+     onChange={handleChange}
+     onBlur={handleBlur}
+       label="Poster URL" 
+       variant="standard" 
+       helperText={errors.poster && touched.poster && errors.poster}
+       error={errors.poster && touched.poster}
+       />
+     {/* {errors.poster && touched.poster && errors.poster} */}
+    {/* <input
+           value={rating}
+           onChange = {(event)=>setRating(event.target.value)}
+          placeholder="Rating" /> */}
 
-      <TextField
-        value={poster}
-        onChange={(event) => setPoster(event.target.value)}
-        id="standard-basic" label="Poster URL" variant="standard" />
+    <TextField
+     id="rating"
+     name="rating"
+     value={values.rating} 
+    onChange={handleChange}
+    onBlur={handleBlur}
+       label="Rating" 
+       variant="standard" 
+       helperText={errors.rating && touched.rating && errors.rating}
+       error={errors.rating && touched.rating}
+       />
+      {/* {errors.rating && touched.rating && errors.rating} */}
 
-      {/* <input
-             value={rating}
-             onChange = {(event)=>setRating(event.target.value)}
-            placeholder="Rating" /> */}
+    {/* <input
+           value={summary}
+           onChange = {(event)=>setSummary(event.target.value)}
+          placeholder="Summary" /> */}
 
-      <TextField
-        value={rating}
-        onChange={(event) => setRating(event.target.value)}
-        id="standard-basic" label="Rating" variant="standard" />
+    <TextField
+      id="summary"
+      name="summary"
+      value={values.summary} 
+     onChange={handleChange}
+     onBlur={handleBlur}
+      label="Summary" 
+      variant="standard" 
+      helperText={errors.summary && touched.summary && errors.summary}
+       error={errors.summary && touched.summary}
+      />
+       {/* {errors.summary && touched.summary && errors.summary} */}
 
-      {/* <input
-             value={summary}
-             onChange = {(event)=>setSummary(event.target.value)}
-            placeholder="Summary" /> */}
+    <TextField
+     id="trailer"
+     name="trailer"
+     value={values.trailer} 
+    onChange={handleChange}
+    onBlur={handleBlur}
+       label="Trailer" 
+       variant="standard"
+       helperText={errors.trailer && touched.trailer && errors.trailer}
+       error={errors.trailer && touched.trailer} 
+       />
+     {/* {errors.trailer && touched.trailer && errors.trailer} */}
+    {/* <button onClick={addMovie}>Add Movie</button> */}
 
-      <TextField
-        value={summary}
-        onChange={(event) => setSummary(event.target.value)}
-        id="standard-basic" label="Summary" variant="standard" />
+    <Button type="submit" variant="outlined">Save</Button>
 
-      <TextField
-        value={trailer}
-        onChange={(event) => setTrailer(event.target.value)}
-        id="standard-basic" label="Trailer" variant="standard" />
+  </form>
 
-      {/* <button onClick={addMovie}>Add Movie</button> */}
 
-      <Button onClick={editMovie} variant="outlined">Save</Button>
+    // <div className="add-movie-form">
+    //   {/* <input
+    //          value={name}
+    //          onChange = {(event)=>setName(event.target.value)}
+    //         placeholder="Name" /> */}
 
-    </div>
+    //   <TextField
+    //     value={name}
+    //     onChange={(event) => setName(event.target.value)}
+    //     id="standard-basic" label="Name" variant="standard" />
+
+    //   {/* <input
+    //          value={poster}
+    //          onChange = {(event)=>setPoster(event.target.value)}
+    //         placeholder="poster URL" /> */}
+
+    //   <TextField
+    //     value={poster}
+    //     onChange={(event) => setPoster(event.target.value)}
+    //     id="standard-basic" label="Poster URL" variant="standard" />
+
+    //   {/* <input
+    //          value={rating}
+    //          onChange = {(event)=>setRating(event.target.value)}
+    //         placeholder="Rating" /> */}
+
+    //   <TextField
+    //     value={rating}
+    //     onChange={(event) => setRating(event.target.value)}
+    //     id="standard-basic" label="Rating" variant="standard" />
+
+    //   {/* <input
+    //          value={summary}
+    //          onChange = {(event)=>setSummary(event.target.value)}
+    //         placeholder="Summary" /> */}
+
+    //   <TextField
+    //     value={summary}
+    //     onChange={(event) => setSummary(event.target.value)}
+    //     id="standard-basic" label="Summary" variant="standard" />
+
+    //   <TextField
+    //     value={trailer}
+    //     onChange={(event) => setTrailer(event.target.value)}
+    //     id="standard-basic" label="Trailer" variant="standard" />
+
+    //   {/* <button onClick={addMovie}>Add Movie</button> */}
+
+    //   <Button onClick={editMovie} variant="outlined">Save</Button>
+
+    // </div>
   );
   }
 

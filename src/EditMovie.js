@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import {  useFormik } from "formik";
 import { formValidationSchema } from './AddMovies';
+import { API_URL } from './global-constants';
 
 // when two component needed the same data (movies)->put the data in same parent component (that is app)-->HOC(higher order components)
 export function EditMovies() {
@@ -14,7 +15,7 @@ export function EditMovies() {
 
     const [movie,setMovie] = useState(null);
     useEffect(()=>{
-      fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${id}`)
+      fetch(`${API_URL}/${id}`)
       .then((data)=>data.json())
       .then((mvs)=>setMovie(mvs));
     },[id]);
@@ -59,7 +60,7 @@ export function EditMovies() {
     //   trailer: trailer
     // };
 
-    fetch(`https://6166c4d913aa1d00170a66f7.mockapi.io/movies/${movie.id}`,
+    fetch(`${API_URL}/movies/${movie.id}`,
     {method:"PUT",
      body:JSON.stringify(updatedMovie),
      headers:{
